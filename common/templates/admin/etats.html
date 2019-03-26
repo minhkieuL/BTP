@@ -1,0 +1,30 @@
+<h1 ng-init='getListeEtats()'>Etats</h1>
+<table class='table'>
+	<thead>
+		<tr>
+			<th>Nom</th>
+			<th>Couleur	</th>
+			<th></th>
+		</tr>
+	</thead>
+	<tbody>
+		
+		
+		<tr ng-repeat='e in listeEtat' class='mb5'>
+			<td  style='color:{{e.color}}'><span class='dib fs18 fb'>●&nbsp;
+			<input 
+				ng-blur='saveEtat(e)'
+				ng-model="e.intitule" 
+				ng-keyup="$event.keyCode == 13 && saveEtat(e)"
+				type='text' 
+				class='pseudo-input' 
+				></span>
+			</td>
+			<td>
+				<select ng-change='saveEtat(e)'  class='form-control' ng-model='e.color_ref' style='color:{{e.color}}'>
+					<option style='color:{{c}}' value='{{$index}}' ng-selected='$index == e.color_ref' ng-repeat='c in colors'>█████&nbsp;&nbsp;&nbsp;{{c}}</option>
+				</select>
+			</td>
+		</tr>
+	</tbody>
+</table>

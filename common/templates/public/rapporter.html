@@ -1,0 +1,184 @@
+<div ng-if='title'><h3>Rapporter du matériel à un dépôt</h3></div>
+<div ng-init='openRapporterChoixChantier()'>
+<!--------------------------------------------------------------------------------------------------------ChoixChantier------------------------------------------------------------------------------------------------------------------>
+
+	<div ng-if='rapporterChoixChantier'>
+		<div ng-if='!entrepot'>
+			<p>Aucun objet à rapporter</p>
+		</div>
+		<div ng-if='entrepot'>
+			<p>Chantier&nbsp;:</p>
+				
+			<select class='form-control' ng-model="selectArticle.refEmp" >
+				<option ng-selected='c.ref==selectArticle.refEmp' ng-repeat='c in entrepot' value='{{c.ref}}'>{{c.intitule}} ({{c.count}} article{{plurial(c.count)}}) </option>
+			</select>
+			
+			<button type="button" class="btn btn-success p100 db mt30" ng-click='updateSelectArticle(null,selectArticle.refEmp,null, null)' >VALIDER</button>
+			<a href="/?route=home"  class="btn btn-secondary freeMarge p100 db" >
+				<span >ANNULER</span>
+			</a>
+		</div>
+	</div>
+		
+<!------------------------------------------------------------------------------------------------------ChoixMateriel---------------------------------------------------------------------------------------------------------------->
+	<div ng-if='rapporterChoixMateriel'>
+		<p ng-if='!article'>Il n'y a pas de matériel dans ce chantier que vous avez précedemment emprunté</p>
+		<div ng-if='article'>
+			<p>Matériels empruntés&nbsp;:</p>
+			
+			<select class='form-control mt20' ng-model="selectArticle.refArt" >
+				<option ng-selected='a.ref==selectArticle.refArt' ng-repeat='a in article' value='{{a.ref}}'>{{a.design}} </option>
+			</select>
+
+			<button type="button" class="btn btn-success p100 db mt30" ng-click='updateSelectArticle(selectArticle.refArt, selectArticle.refEmp, selectArticle.refUt, article.etat)' >VALIDER</button>
+			<a href="/?route=home"  class="btn btn-secondary freeMarge p100 db" >
+				<span >ANNULER</span>
+			</a>
+		</div>
+	</div>
+		
+<!------------------------------------------------------------------------------------------------------ChoixEtat---------------------------------------------------------------------------------------------------------------->
+	<div ng-if='rapporterChoixEtat'>
+		
+		<p>Etat avant emprunt:</p>
+		<p class='capital bold'>{{article.dernierEmp.intituleEtat}}</p>
+
+		<p>Toujours dans le même état ?</p>
+		<button type="button" class="btn btn-success p100 db mt30" ng-click='updateSelectArticle(selectArticle.refArt, selectArticle.refEmp, selectArticle.refUt, article.dernierEmp.refEtat)' >Oui</button>
+		<button type="button" class="btn btn btn-info p100 db mt30" ng-click='openRapporterChoixEtat3(article.dernierEmp.refEtat)' >Non</button>
+		<button type="button" class="btn btn-danger p100 db mt30" ng-click='updateSuiviArticle(article.ref, 31, article.dernierEmp.refEtat)' >Matériel manquant</button>
+		
+		<a href="/?route=home"  class="btn btn-secondary freeMarge p100 db" >
+			<span >ANNULER</span>
+		</a>
+	</div>
+
+<!------------------------------------------------------------------------------------------------------ChoixEtat2---------------------------------------------------------------------------------------------------------------->
+<!--
+	<div ng-if='rapporterChoixEtat2'>
+		
+		<p>Etat avant emprunt:</p>
+		<p class='capital bold'>{{article.dernierEmp.intituleEtat}}</p>
+		
+		<p>Que voulez-vous faire ?</p>
+		<button type="button" class="btn btn btn-info p100 db mt30" ng-click='openRapporterChoixEtat3(article.dernierEmp.refEtat)' >Changer son état</button>
+		<button type="button" class="btn btn btn-danger p100 db mt30" ng-click='updateSuiviArticle(article.ref, article.rep.refRep, 6)' >Matériel cassé, emmener en réparation</button>
+	</div>
+-->
+		
+<!------------------------------------------------------------------------------------------------------ChoixEtat3---------------------------------------------------------------------------------------------------------------->
+	<div ng-if='rapporterChoixEtat3'>
+		
+		<p>Etat :</p>
+		<select class='form-control' ng-model="selectArticle.refEtat" >
+			<option ng-selected='e.ref==selectArticle.refEtat' ng-repeat='e in etat' value='{{e.ref}}'>{{e.intitule}} </option>
+		</select>
+		<div ng-if='selectArticle.refEtat!=6'>
+			<button type="button" class="btn btn-success p100 db mt30" ng-click='closeRapporterChoixEtat3();openRapporterChoixDepot() ' >VALIDER</button>
+		</div>
+		<div ng-if='selectArticle.refEtat==6'>
+			<button type="button" class="btn btn-success p100 db mt30" ng-click='updateSuiviArticle(article.ref, article.rep.refRep, 6)' >VALIDER</button>
+		</div>
+		
+		<a href="/?route=home"  class="btn btn-secondary freeMarge p100 db" >
+			<span >ANNULER</span>
+		</a>
+	</div>
+		
+<!------------------------------------------------------------------------------------------------------ChoixDepot---------------------------------------------------------------------------------------------------------------->
+	<div ng-if='rapporterChoixDepot'>
+		
+		<p>Rapporter vers le dépôt d'origine&nbsp;:</p>
+		<p class='capital bold'>{{article.baseIntitule}}</p>
+
+		<button type="button" class="btn btn-success p100 db mt30" ng-click='updateSuiviArticle(article.ref, article.base, selectArticle.refEtat)' >Oui</button>
+		<button type="button" class="btn btn btn-info p100 db mt30" ng-click='openRapporterChoixDepot2(selectArticle.refEtat)' >Choisir un autre dépôt</button>
+		
+		<a href="/?route=home"  class="btn btn-secondary freeMarge p100 db" >
+			<span >ANNULER</span>
+		</a>
+	</div>
+<!------------------------------------------------------------------------------------------------------ChoixDepot2---------------------------------------------------------------------------------------------------------------->
+	<div ng-if='rapporterChoixDepot2'>
+		
+		<p>Liste des dépôts:</p>
+		<select class='form-control' ng-model="selectArticle.refEmp" >
+			<option ng-selected='c.ref==selectArticle.refEmp' ng-repeat='c in entrepot' value='{{c.ref}}'>{{c.intitule}} </option>
+		</select>
+		<button type="button" class="btn btn-success p100 db mt30" ng-click='updateSuiviArticle(selectArticle.refArt, selectArticle.refEmp, selectArticle.refEtat )' >VALIDER</button>
+		<a href="/?route=home"  class="btn btn-secondary freeMarge p100 db" >
+			<span >ANNULER</span>
+		</a>
+	</div>
+<!------------------------------------------------------------------------------------------------------Confirmation---------------------------------------------------------------------------------------------------------------->
+	<div ng-if='rapporterConfirmation'>
+		
+		<button type="button" class="btn btn-success left"><i class="fa fa-home"></i><a href="/?route=home"> Retourner à l'accueil</a></button>
+
+		<br>
+		<br>
+		<h3 class='mt50'>Opération réussie <i class="fa fa-check green"></i></h3>
+<!--
+		<p class='bold mt10'>le {{article.dateDernierMouv}}</p>
+-->
+		<p>Le matériel peut être transporté vers le dépôt&nbsp;:</p>
+<!--
+		<p>Dépôt choisi :</p>
+-->
+		<p ng-if='!article.dernierEmp.intituleEmpParent' class='capital bold'>{{article.dernierEmp.intituleEmp}}</p>
+		<p ng-if='article.dernierEmp.intituleEmpParent' class='capital bold'>{{article.dernierEmp.intituleEmpParent}}  >  {{article.dernierEmp.intituleEmp}}</p>
+<!--
+
+		<p>Matériel rapporté :</p>
+		<p class='capital bold'>{{article.design}}</p>
+			<p class='bold'>{{article.ref}}</p>
+			
+-->
+<!--
+		<p>Etat du matériel :</p>
+		<p class='capital bold'>{{article.dernierEmp.intituleEtat}}</p>
+-->
+	</div>
+<!------------------------------------------------------------------------------------------------------Confirmation2---------------------------------------------------------------------------------------------------------------->
+	<div ng-if='rapporterConfirmation2'>
+		
+		<button type="button" class="btn btn-success left"><i class="fa fa-home"></i><a href="/?route=home"> Retourner à l'accueil</a></button>
+
+		<br>
+		<br>
+		<h3 class='mt50'>Opération réussie <i class="fa fa-check green"></i></h3>
+<!--
+		<p class='bold mt10'>le {{article.dateDernierMouv}}</p>
+-->
+		<p>Matériel signalé perdu</p>
+<!--
+		<p>Matériel perdu :</p>
+		<p class='capital bold'>{{article.design}}</p>
+			<p class='bold'>{{article.ref}}</p>
+-->
+	</div>
+<!------------------------------------------------------------------------------------------------------Confirmation3---------------------------------------------------------------------------------------------------------------->
+	<div ng-if='rapporterConfirmation3'>
+		
+		<button type="button" class="btn btn-success left"><i class="fa fa-home"></i><a href="/?route=home"> Retourner à l'accueil</a></button>
+
+		<br>
+		<br>
+		<h3 class='mt50'>Opération réussie <i class="fa fa-check green"></i></h3>
+<!--
+		<p class='bold mt10'>le {{article.dateDernierMouv}}</p>
+-->
+		<p>Matériel en réparation à&nbsp;:</p>
+		<p ng-if='!article.dernierEmp.intituleEmpParent' class='capital bold'>{{article.dernierEmp.intituleEmp}}</p>
+		<p ng-if='article.dernierEmp.intituleEmpParent' class='capital bold'>{{article.dernierEmp.intituleEmpParent}}  >  {{article.dernierEmp.intituleEmp}}</p>
+				
+<!--
+		<p>Matériel concerné :</p>
+		<p class='capital bold'>{{article.design}}</p>
+			<p class='bold'>{{article.ref}}</p>
+-->
+	</div>
+	
+
+	
+</div>

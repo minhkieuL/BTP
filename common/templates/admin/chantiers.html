@@ -1,0 +1,94 @@
+<h1 >Chantiers</h1>
+
+<!-- LISTE DES CHANTIERS --> 
+<div  ng-init='getChantiers()'>
+	<div class='row'>
+		<div class='col '>
+			<div class='categ-col'>
+			
+				<p class='categ-col-title'>Chantiers</p>
+				<ul>
+					<li ng-if='ep.type==1' ng-class='{"active":currentEmp.ref==ep.ref }' ng-repeat='ep in emplacementParent' ng-click='getSousEmp(ep); date()'>{{ep.intitule}} <span style="position: absolute; right:40px" ng-if='ep.dateDebut && ep.dateFin'>{{ep.dateDebutP}} - {{ep.dateFinP}}</span></li>
+				</ul><li  ng-class='{"active":currentEditEmp.placeholder=="Nouveau chantier"}'  class='fi' ng-click='newChantier(); date()'><i class="fa fa-plus"></i> Nouveau chantier</li>
+			</div> 
+		</div>
+	</div>
+</div>
+
+
+
+<!-- INPUT DE MODIFICATION --> 
+<div ng-class='{"bord":dateEmp==true}' ng-if='currentEditEmp.placeholder || erreurDate'>
+	<div class='row ' ng-class='{"mt30":dateEmp!=true}'>
+		<div class='col-12 pa10 mb10' ng-if='dateEmp'>
+			<span class='fb'>Début&nbsp;:</span>
+			<input ng-blur='saveEmp()' type='date' ng-model="currentEditEmp.dateDebutDate" class='pseudo-input' id="inputDernierEntretien" ng-show='currentEditEmp.dateDebut || !currentEditEmp.dateDebutShowButton'>
+			<button class='btn btn-white btn-sm' ng-show='!currentEditEmp.dateDebut && currentEditEmp.dateDebutShowButton' ng-click='currentEditEmp.dateDebutShowButton=!currentEditEmp.dateDebutShowButton'>Définir</button>
+			<span class='ml20 fb'>Fin&nbsp;:</span>
+			<input 
+				ng-blur='saveEmp()' 
+				ng-model="currentEditEmp.dateFinDate" 
+				ng-show='currentEditEmp.dateFin || !currentEditEmp.dateFinShowButton'
+				type='date' 
+				class='pseudo-input' id="inputDerniereRep" 
+				>
+			
+			<button class='btn btn-white btn-sm' ng-show='!currentEditEmp.dateFin && currentEditEmp.dateFinShowButton' ng-click='currentEditEmp.dateFinShowButton=!currentEditEmp.dateFinShowButton'>Définir</button>
+			<div class='mt10 text-danger' ng-if='erreurDate'>La date de début ne peut pas être inférieur à la date de fin !</div>
+		</div>
+		
+		
+		
+		
+		<div  class='col-10'>
+			<div class="input-group mb-3">
+				<div class="input-group-prepend">
+					<span class="input-group-text" id="basic-addon1"><i class="fa fa-pencil"></i></span>
+				</div>
+				<input ng-keyup="$event.keyCode == 13 && addChantierValider()" class='form-control' ng-model='currentEditEmp.intitule' placeholder="{{currentEditEmp.placeholder}}" />
+			</div>
+		</div>
+		
+		
+		<div class='col-1' ng-show='currentEditEmp.ref' >
+			<button ng-click='openSupEmpModal()'class='btn btn-danger p100'><i class="fa fa-trash"></i></button>
+		</div>
+		
+		
+		
+		<div class='col-1'>
+			<button class='btn btn-success db p100' ng-if='currentEditEmp.intitule' ng-click='addChantierValider()'><i class="fa fa-check"></i></button>
+		</div>
+	</div>
+</div>
+
+
+
+<!-- MODAL POUR LA SUPPRESSION DE CHANTIERS --> 
+<div class="modal scroll" ng-class='{"modal-open": supEmpModalOpened}'>
+	<div class="modal-dialog modal-dialog-centered modal-dialog-lg" role="document">
+		<div class="modal-content ">
+  
+	 
+			<div ng-if='supEmpModalOpened'>
+				<div class="modal-header">
+					<h6 class="modal-title">Suppression de l'emplacement&nbsp;: {{currentEditCateg.intitule}}</h6>
+					<button type="button" ng-click='closeSupEmpModal()' class="close" data-dismiss="modal" aria-label="Close">
+					  <span aria-hidden="true">&times;</span>
+					</button>
+				  </div>
+				  <div class="modal-body">
+					   <div class="form-group">
+						   <p>Êtes-vous certain de vouloir continuer ? </p>
+					  </div>
+				  </div>
+				  <div class="modal-footer">
+					<button type="button" ng-click='delEmp(currentEditEmp);closeSupEmpModal();getChantiers()' class="btn btn-danger">Oui</button>
+					<button type="button" ng-click='closeSupEmpModal()' class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+				  </div>
+			</div>
+		<div/>
+	</div>
+</div>
+<div class='black-cover' ng-click='closeSupEmpModal()'></div>
+

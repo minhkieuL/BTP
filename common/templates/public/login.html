@@ -1,0 +1,20 @@
+<!------------------------PUBLIC----------------------->
+
+<div class='mt50 mb30'>
+<!--
+		<label>E-mail</label>
+-->
+		<input class='form-control'type='text' ng-model='login.email' placeholder='E-mail'/>
+</div>
+<div class='mb20'>
+<!--
+	<label>Mot de passe</label>
+-->
+	<input ng-keyup="$event.keyCode == 13 && connectMe()" class='form-control'type='password' ng-model='login.pass' placeholder='Mot de passe'/>
+</div>
+<div class='tar'>
+	<button class='btn btn-success btn-sm mt50' ng-click='connectMe()'>Connexion</button>
+</div>
+<div class='text-warning' ng-if='message'>
+	{{message}}
+</div>

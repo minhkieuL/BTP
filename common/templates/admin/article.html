@@ -1,0 +1,300 @@
+<h1 >Articles</h1>
+<div class='row mb20' ng-init='getArticles()'>
+	<div class='col'>
+		<button ng-click='openArticleModal()' class='btn btn-success mb5'><i class="fa fa-plus"></i> Nouvel article</button>
+
+		<button ng-click='delArticle()' class='btn btn-danger  mb5'><i class="fa fa-trash"></i> Supprimer</button>
+		
+<!--
+		<button ng-click='openDuplicArticleModal()' class='btn btn-info mb5'><i class="fa fa-files-o"></i> Dupliquer</button>	
+-->
+		
+		<button ng-click='choiceSelectAllArticles()' class='btn btn-secondary mb5'><i class="fa fa-list"></i> Sélectionner tout</button>
+<!--
+		<button ng-click='getBarcode()' class='btn btn-secondary mb5'>Barcode</button>
+-->
+<!--
+		<div ng-show='showBarcode'><img id='output'></div>
+-->
+<!--
+		<div ><img src='EAN13.php'></div>
+-->
+<!--
+		<img ng-src="{{imageEan}}" />
+-->
+		
+		
+		
+<!--
+		<button ng-click='getArticles()' class='btn btn-white mb5'><i class="fa fa-refresh"></i> Actualiser</button>
+-->
+		
+<!--
+		<button ng-if='showButtonPerdu' ng-click='takeArticlesPerdus()' class='btn btn-white mb5'><i class="fa fa-question"></i> Articles perdus</button>
+		<button ng-if='!showButtonPerdu' ng-click='getArticles()' class='btn btn-white mb5'><i class="fa fa-reply-all"></i>Tout les Articles</button>
+-->
+	
+	</div>
+	<div class='col-3 tar'>  
+		<input ng-keyup="$event.keyCode == 13 && enterSearch()" type='text'  ng-keyup="$event.keyCode == 13" class='form-control' ng-model='articleSearch' placeholder='Rechercher' />
+	</div>
+</div>
+<select class='form-control mb20 gray_color' ng-model='articleFiltreCateg' ng-change='getArticles()'>
+	<option value=0>Afficher toutes les catégories </option>
+	<option ng-selected='cp.ref == articleFiltreCateg' value='{{cp.ref}}' ng-repeat='cp in categorieParent'>{{cp.nom}}</option>
+</select>
+<table class='table table-sm table-hover table-fixed '>	
+	<thead>
+		<tr>
+			<th class='pointer'ng-click='changeClassementArticle(c);changeAscArticles()' nowrap  ng-repeat='c in colonne'>{{c.nom}}  <i  ng-if='c.sort_table' class="fa fa-sort"></i></th>
+<!--
+			<th></th>
+			<th>Désignation</th>
+			<th>Etat</th>
+			<th>Emplacement actuel</th>
+			<th>Emplacement base</th>
+			<th>Actions</th>
+-->
+		</tr>
+	</thead>
+	<tbody >
+		<tr   ng-class='{"table-success":a.selected}' ng-repeat='a in articles |filter:articleSearch'>
+			<td><input type='checkbox' ng-model='a.selected'>
+	
+			</td>
+			<td><input ng-keyup="$event.keyCode == 13 && saveArticle(a)" size="{{a.design.length}}" class='pseudo-input' type='text' ng-model='a.design'></td>
+			<td >
+				
+				<select style ="color:{{a.suivi.color}}" ng-if=' a.suivi.refEmp' class="form-control" ng-change='updateSuiviArticle(a, articleSuivi.etat, a.suivi.refEmp);closeListEtat(a)' ng-model='articleSuivi.etat'>
+					<option style='color:{{e.color}}' ng-selected='e.ref==a.suivi.refEtat'  ng-repeat='e in etat' value='{{e.ref}}'>●&nbsp;{{e.intitule}}</option>
+				</select>
+				<select  style ="color:{{a.suivi.color}}" ng-if='!a.suivi.refEmp' class="form-control" ng-change='updateSuiviArticle(a, articleSuivi.etat, a.base);closeListEtat(a)' ng-model='articleSuivi.etat'>
+					<option style='color:{{e.color}}' ng-selected='e.ref==a.suivi.refEtat'  ng-repeat='e in etat' value='{{e.ref}}'>●&nbsp;{{e.intitule}}</option>
+				</select>
+			</td>
+			<td>{{a.suivi.intituleEmp}}
+				<p ng-if='!a.suivi.intituleEmp' >{{a.intituleBase}}</p>
+			</td>
+			<td>
+				<select class="form-control" ng-change='saveArticle(a)'ng-model='a.base'>
+					<option ng-selected='em.ref==a.base' ng-repeat='em in emplacement' value='{{em.ref}}'>{{em.intitule}}</option>
+				</select>
+			</td>
+			
+			<td><button class='btn btn-sm btn-success mb2' ng-click='openArticleZoomModal();getSuiviArticle(a)'><i class="fa fa-search-plus"></i></button>
+				<button ng-click='openDuplicArticleModal(a)' class='btn btn-info btn-sm mb2 '><i class="fa fa-files-o"></i></button>
+				</td>
+			
+		</tr>
+		
+	</tbody>
+</table>
+
+
+<nav aria-label="Page navigation ">
+  <ul class="pagination justify-content-end">
+	<li class="page-item " ng-click='previousPageArticle()'>
+	  <a class="page-link" href="#" tabindex="-1" aria-label="Previous">
+		<span aria-hidden="true">&laquo;</span>
+		<span class="sr-only">Previous</span>
+	  </a>
+	</li>
+	<li class="page-item" ng-click='nextPageArticle()'>
+	  <a class="page-link" href="#" aria-label="Next">
+		<span aria-hidden="true">&raquo;</span>
+		<span class="sr-only">Next</span>
+	  </a>
+	</li>
+  </ul>
+</nav>
+
+<!--pop up modal -->	
+<div class="modal scroll" ng-class='{"modal-open": articleModalOpened || articleZoomModalOpened || articleDuplicModalOpened}'>
+<!--
+	<div class="modal-dialog modal-lg">
+-->
+		<div class="modal-dialog modal-dialog-centered modal-dialog-lg" role="document">
+			<div class="modal-content ">
+	  
+				<!-- Modal pour le détail article -->  
+				<div ng-if='articleZoomModalOpened'>
+					<div class="modal-header">
+						<h5 class="modal-title">{{currentZoomArticle.design}} <span class='fi'>&mdash; détail</span></h5>
+						<button type="button" ng-click='closeArticleZoomModal()' class="close" data-dismiss="modal" aria-label="Close">
+						  <span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+	  
+					<div class="modal-body">
+						<p class='fs14'>Date de création de l'article&nbsp: {{currentZoomArticle.dateCreation}}</p>
+						
+						<p class='fs14'>Réf. article&nbsp;: <b>{{currentZoomArticle.ref}}</b></p>
+						
+						<div class="input-group mb-3">
+						  <div class="input-group-prepend">
+							<label class="input-group-text" for="inputGroupSelect01">Catégorie</label>
+						  </div>
+						  <select class="custom-select"  ng-change='saveArticle(currentZoomArticle)' ng-model='currentZoomArticle.categorie'>
+								<option ng-selected='cp.ref==currentZoomArticle.categorie' ng-repeat='cp in categorieParent' value='{{cp.ref}}' label='{{cp.nom}}'></option>
+							</select>
+						</div>
+					
+						<div class="input-group mb-3">
+						  <div class="input-group-prepend">
+							<label class="input-group-text" for="inputGroupSelect01">Emplacement de réparation</label>
+						  </div>
+						  <select class="custom-select" ng-change='saveArticle(currentZoomArticle)'ng-model='currentZoomArticle.rep'>
+							<option ng-selected='emp.ref==currentZoomArticle.rep' ng-repeat='emp in emplacement' value='{{emp.ref}}'>{{emp.intitule}}</option>
+						</select>
+							</div>
+					
+						<p>Dernier entretien&nbsp:
+							<input ng-blur='saveArticle(currentZoomArticle)'  class='pseudo-input' type='date' ng-model='currentZoomArticle.dernierEntretienDate' ng-show='currentZoomArticle.dernierEntretien || !currentZoomArticle.dernierEntretienShowButton'>
+							<button class='btn btn-white btn-sm' ng-show='!currentZoomArticle.dernierEntretien && currentZoomArticle.dernierEntretienShowButton' ng-click='currentZoomArticle.dernierEntretienShowButton=!currentZoomArticle.dernierEntretienShowButton'>Ajouter un entretien</button>
+						</p>
+						<p>Dernière réparation&nbsp:
+							<input ng-blur='saveArticle(currentZoomArticle)' class='pseudo-input' type='date' ng-model='currentZoomArticle.derniereRepDate' ng-show='currentZoomArticle.derniereRep || !currentZoomArticle.derniereRepShowButton'>
+							<button class='btn btn-white btn-sm' ng-show='!currentZoomArticle.derniereRep && currentZoomArticle.derniereRepShowButton' ng-click='currentZoomArticle.derniereRepShowButton=!currentZoomArticle.derniereRepShowButton'>Ajouter une réparation</button>
+						</p>
+						
+						
+						<div ng-if='!currentZoomLoading'>
+							<table ng-if='currentZoomArticle.suivi.length' class='table table-hover table-sm fs12'>
+								<thead>
+									<tr>
+										<th>Date du Mouvement</th>
+										<th>Emplacement</th>
+										<th>Utilisateur</th>
+										<th>Etat</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr ng-repeat='s in currentZoomArticle.suivi '>
+										<td>{{s.dateMouv}}</td>
+<!--
+										<td>{{s.refEmp}}</td>
+-->
+										<td>{{s.intitule}}</td>
+										<td>{{s.nomUt}} {{s.prenomUt}} </td>
+										<td>{{s.intituleEtat}}</td>
+									</tr>
+								</tbody>
+							</table>
+							<nav aria-label="Page navigation suivi " ng-if='currentZoomArticle.suivi.length'>
+							  <ul class="pagination justify-content-end">
+								<li class="page-item " ng-click='previousPageSuivi()'>
+								  <a class="page-link" href="#" tabindex="-1" aria-label="Previous">
+									<span aria-hidden="true">&laquo;</span>
+									<span class="sr-only">Previous</span>
+								  </a>
+								</li>
+								<li class="page-item" ng-click='nextPageSuivi()'>
+								  <a class="page-link" href="#" aria-label="Next">
+									<span aria-hidden="true">&raquo;</span>
+									<span class="sr-only">Next</span>
+								  </a>
+								</li>
+							  </ul>
+							</nav>
+							<p class='text-warning'ng-if='!currentZoomArticle.suivi.length' >Pas encore de mouvement pour cet article</p>
+						</div>
+						<div class='tac'>
+							<img ng-if='currentZoomLoading' class='preloader' src='loading.gif'> 
+						</div>
+					</div> 
+			  </div>
+
+	  
+				<!-- Modal pour la création d'article -->  
+				<div ng-if='articleModalOpened'>
+					  <div class="modal-header">
+						<h5 class="modal-title">Ajout d'un article</h5>
+						<button type="button" ng-click='closeArticleModal()' class="close" data-dismiss="modal" aria-label="Close">
+						  <span aria-hidden="true">&times;</span>
+						</button>
+					  </div>
+					  <div class="modal-body">
+						   <form ng-submit="addArticle()">
+							   <div class="form-group">
+								   <label for="InputFunction">Désignation</label>
+									<input type="text" ng-model="newArticle.design" class="form-control" id="inputDesign" placeholder="Entrer la désignation">
+							  </div>
+							  <p class='text-warning' ng-if='erreurDup'> Désignation déjà existente</p>
+							  <div class="form-group">
+								   <label for="InputFunction">Catégorie</label>
+									<select class="form-control" ng-model="newArticle.categorie">
+										<option ng-selected='c.ref==newArticle.categorie' ng-repeat='c in categorieParent' value='{{c.ref}}'>{{c.nom}}</option>
+									</select>
+							  </div>
+<!--
+							  <div class="form-group">
+									<label for="InputFunction">Etat</label>
+									<select class="form-control" ng-model="newArticle.etat">
+											<option ng-selected='e.ref==newArticle.etat' ng-repeat='e in etat' value='{{e.ref}}'>{{e.intitule}}</option>
+									</select>
+							  </div>
+-->
+							  <div class="form-group">
+									<label for="InputFunction">Emplacement base</label>
+									<select class="form-control" ng-model="newArticle.base">
+											<option ng-selected='b.ref==newArticle.emplacement' ng-repeat='b in emplacement' value='{{b.ref}}'>{{b.intitule}}</option>
+									</select>
+							  </div>
+							   <p class='text-warning' ng-if='erreurBase'>Veuillez renseigner l'emplacement de base</p>
+							  <div class="form-group">
+									<label for="InputFunction">Emplacement de réparation</label>
+									<select class="form-control" ng-model="newArticle.rep">
+											<option ng-selected='r.ref==newArticle.emplacement' ng-repeat='r in emplacement' value='{{r.ref}}'>{{r.intitule}}</option>
+									</select>
+							  </div>
+							  <div class="form-group">
+								<label for="exampleInputEmail1">Dernier entretient</label>
+								<input type='date' ng-model="newArticle.dernierEntretien" class="form-control" id="inputDernierEntretien" >
+							  </div>
+							  <div class="form-group">
+								<label for="exampleInputEmail1">Dernière réparation</label>
+								<input type='date' ng-model="newArticle.derniereRep" class="form-control" id="inputDerniereRep">
+							  </div>
+							  <!-- bouton invisible permettant de valider le formulaire en appuyant sur Entrée --> 
+							  <input type="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px;"/>
+						  </form>
+					  </div>
+					  <div class="modal-footer">
+						<button type="button" ng-click='addArticle()' class="btn btn-success">Enregistrer</button>
+						<button type="button" ng-click='closeArticleModal()' class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+					  </div>
+				  
+				  </div>
+				<!-- Modal pour la duplication d'article -->  
+				<div ng-if='articleDuplicModalOpened'>
+					  <div class="modal-header">
+						<h5 class="modal-title">Duplication de l'article&nbsp: {{currentDuplicArticle.design}}</h5>
+						<button type="button" ng-click='closeDuplicArticleModal()' class="close" data-dismiss="modal" aria-label="Close">
+						  <span aria-hidden="true">&times;</span>
+						</button>
+					  </div>
+					  <div class="modal-body">
+						   <div class="form-group">
+							   <form ng-submit="duplicArticle()">
+								   <label for="InputFunction">Désignation</label>
+									<input type="text" ng-model="newArticle.design" class="form-control" id="inputDesign" placeholder="Entrer la désignation">
+									<p class='text-warning' ng-if='erreurDup'> Désignation déjà existente</p>
+									<input type="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px;"/>
+								</form>
+						  </div>
+					  </div>
+					  <div class="modal-footer">
+						<button type="button" ng-click='duplicArticle()' ng-if='newArticle.design' class="btn btn-success">Enregistrer</button>
+						<button type="button" ng-click='closeDuplicArticleModal()' class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+					  </div>
+				  
+				  </div>
+	  
+			</div>
+		</div>
+		<div class='black-cover' ng-click='closeArticleModal() ; closeArticleZoomModal() ; closeDuplicArticleModal()'></div>
+<!--
+	</div>
+-->
+</div>
+

@@ -1,0 +1,106 @@
+<h1 >Utilisateurs</h1>
+<div class='row mb20'  ng-init='getUsers()'>
+	<div class='col'>
+		<button ng-click='openUserModal()' class='btn btn-success'><i class="fa fa-plus"></i> Nouvel utilisateur</button>
+
+		<button ng-click='delUser()' class='btn btn-danger'><i class="fa fa-trash"></i> Supprimer</button>
+		
+		<button ng-click='choiceSelectAllUsers()' class='btn btn-secondary'><i class="fa fa-list"></i> Sélectionner tout</button>
+		
+<!--
+		<button ng-click='getUsers()' class='btn btn-white'><i class="fa fa-refresh"></i> Actualiser</button>
+-->
+	</div>
+	<div class='col-3 tar'> <input type='text'  class='form-control' ng-model='userSearch' placeholder='Rechercher'/> </div>
+</div>
+<table class='table table-sm table-hover'>	
+	<thead>
+		<tr>
+			<th class='pointer'ng-click='changeClassementUsers(c);changeAscUsers();changeDescUsers()' nowrap  ng-repeat='c in colonne'>{{c.nom}}  <i  ng-if='c.sort_table' class="fa fa-sort"></i></th>
+<!--
+			<th></th>
+			<th>Fonction</th>
+			<th>Nom</th>
+			<th>Prénom</th>
+			<th>Courriel</th>
+-->
+		</tr>
+	</thead>
+	<tbody>
+		<tr ng-class='{"table-success":u.selected}' ng-repeat='u in users |filter:userSearch'>
+			<td><input type='checkbox' ng-model='u.selected'></td>
+			<td>
+				<select class="form-control" ng-change='saveUser(u)'ng-model='u.type'>
+					<option ng-selected='o.ref==u.type' ng-repeat='o in typeCompte' value='{{o.ref}}'>{{o.intitule}}</option>
+				</select>
+<!--
+			<select ng-options='o as o.intitule for o in typeCompte track by o.ref'  ng-model='u.type'></select>
+-->
+			</td>
+			<td><input ng-keyup="$event.keyCode == 13 && saveUser(u)" ng-submit='saveUser(u)' size="{{u.nom.length}}" class='pseudo-input' type='text' ng-model='u.nom'></td>
+			<td><input ng-keyup="$event.keyCode == 13 && saveUser(u)" size="{{u.prenom.length}}" class='pseudo-input' type='text' ng-model='u.prenom'></td>
+			<td><input ng-keyup="$event.keyCode == 13 && saveUser(u)" size="{{u.mail.length}}" class='pseudo-input' type='text' ng-model='u.mail'></td>
+			
+		</tr>
+		
+	</tbody>
+</table>
+
+
+<nav aria-label="Page navigation ">
+  <ul class="pagination justify-content-end">
+	<li ng-click='previousPageUser()' class="page-item ">
+	  <a class="page-link" href="#" tabindex="-1" aria-label="Previous">
+		<span aria-hidden="true">&laquo;</span>
+		<span class="sr-only">Previous</span>
+	  </a>
+	</li>
+	<li class="page-item" ng-click='nextPageUser()'>
+	  <a class="page-link" href="#" aria-label="Next">
+		<span aria-hidden="true">&raquo;</span>
+		<span class="sr-only">Next</span>
+	  </a>
+	</li>
+  </ul>
+</nav>
+
+<!--pop up modal -->	
+
+<div class="modal" ng-class='{"modal-open": userModalOpened}'>
+  <div class="modal-dialog modal-dialog-centered" role="document">
+	<div class="modal-content ">
+	  <div class="modal-header">
+		<h5 class="modal-title">Ajout d'un utilisateur</h5>
+		<button type="button" ng-click='closeUserModal()' class="close" data-dismiss="modal" aria-label="Close">
+		  <span aria-hidden="true">&times;</span>
+		</button>
+	  </div>
+	  <div class="modal-body">
+		   <div class="form-group">
+			   <label for="InputFunction">Fonction</label>
+				<select class="form-control" ng-model="newUser.type">
+					<option ng-selected='o.ref==newUser.type' ng-repeat='o in typeCompte' value='{{o.ref}}'>{{o.intitule}}</option>
+				</select>
+		  </div>
+		  <div class="form-group">
+			<label for="InputName">Nom</label>
+			<input type="text" ng-model="newUser.nom" class="form-control" id="inputName" placeholder="Entrer le nom">
+		  </div>
+		  <div class="form-group">
+			<label for="prenom">Prénom</label>
+			<input type="text" ng-model="newUser.prenom" class="form-control" id="inputPrenom" placeholder="Entrer le prénom">
+		  </div>
+		  <div class="form-group">
+			<label for="exampleInputEmail1">Courriel</label>
+			<input type="text" ng-model="newUser.mail" class="form-control" id="exampleInputEmail1" placeholder="Entrer l'addresse e-mail">
+		  </div>
+	  </div>
+	  <div class="modal-footer">
+		<button type="button" ng-click='addUser()' class="btn btn-success">Enregistrer</button>
+		<button type="button" ng-click='closeUserModal()' class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+	  </div>
+	</div>
+  </div>
+  <div class='black-cover' ng-click='closeUserModal()'></div>
+</div>
+

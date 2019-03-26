@@ -1,0 +1,26 @@
+<div id='login-container'>
+<!--
+	<h1>Connexion</h1>
+-->
+	<p class='fs20'><i class="fa fa-clipboard"></i> Admin - BTP</p>
+	<div class='mb20'>
+		<label>E-mail</label>
+		<input ng-keyup="$event.keyCode == 13 && connectMe()" class='form-control'type='text' ng-model='login.email'/>
+	</div>
+	<div class='mb20'>
+		<label>Mot de passe</label>
+		<input ng-keyup="$event.keyCode == 13 && connectMe()" class='form-control'type='password' ng-model='login.pass'/>
+	</div>
+	<div class='tar'>
+		<button class='btn btn-success' ng-click='connectMe()'>Valider</button>
+	</div>
+	<div class='text-warning' ng-if='message'> {{message}}</div>
+</div>
+<style>
+.admin-container {
+	background-color:#23282e;
+}
+.admin-nav *{
+	display:none;
+}
+</style>

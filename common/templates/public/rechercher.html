@@ -1,0 +1,29 @@
+<h3>Rechercher un matériel</h3>
+<div ng-init='openRechercherIntro()'>
+<!------------------------------------------------------------------------------------------------------choixCateg---------------------------------------------------------------------------------------------------------------->
+	<div ng-if='rechercherIntro'>
+		<p>Par catégorie</p>
+		<select class="form-control mb20" ng-model="articleSearch.cat">
+			<option ng-selected='c.ref==articleSearch.categorie' ng-repeat='c in categorieParent' value='{{c.ref}}'>{{c.nom}}</option>
+		</select>
+		<button type="button" class="btn btn-danger p100 db mt30" ng-click='updateArticleSearch(articleSearch.cat)'>RECHERCHER</button>
+	</div>
+<!------------------------------------------------------------------------------------------------------getArticleParCateg---------------------------------------------------------------------------------------------------------------->
+	<div ng-if='rechercherArticleFound'>
+		<div ng-if='article.length && article.dernierEmp.refEmp != 31'>
+			<p> {{article.length}} articles trouvés</p>
+			<u ng-repeat='a in article'>
+				<p ng-if='a.dernierEmp.intituleEmp ' class='pinkTitle bold'><i class="fa fa-map-marker"></i> {{a.dernierEmp.intituleEmp}} </p>
+				<p ng-if='!a.dernierEmp.intituleEmp' class='pinkTitle bold'><i class="fa fa-map-marker"></i> {{a.baseIntitule}} </p>
+				<li>{{a.ref}}</li>
+				<li>{{a.design}}</li>
+				<li class='mb20'>{{a.etatIntitule}}</li>
+			</u>
+			
+			
+		</div>
+		<div ng-if='!article.length'>
+			<p> Il n'y a pas d'article disponible venant de cette catégorie </p>
+		</div>
+	</div>
+</div>

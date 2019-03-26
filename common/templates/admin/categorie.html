@@ -1,0 +1,93 @@
+<h1 >Categories</h1>
+<div class='row' ng-init='getCateg()'>
+	<div class='col '>
+		<div class='categ-col'>
+		
+			<p class='categ-col-title'>Catégories</p>
+			<ul>
+				<li ng-class='{"active":currentCateg.ref==cp.ref && currentEditCateg.nom!="Nouvelle catégorie"}' ng-repeat='cp in categorieParent' ng-click='getSousCateg(cp)'>{{cp.nom}}</li>
+			</ul><li  ng-class='{"active":currentEditCateg.nom=="Nouvelle catégorie"}' class='fi' ng-click='newCateg()'><i class="fa fa-plus"></i> Nouvelle catégorie</li>
+<!--
+			<button type="button" class="btn btn-white ma20 btn-sm"><i class="fa fa-plus"></i> Nouvelle catégorie</button>
+-->
+		</div> 
+	</div>
+	<div class='col '>
+		<div class='categ-col' >
+				<p class='categ-col-title'>Sous catégories</p>
+			<div ng-if='!currentCateg || currentEditCateg.nom=="Nouvelle catégorie"' class='pa20 fs14'>Veuillez sélectionner une catégorie</div>
+			<div ng-if='currentCateg && currentEditCateg.nom!="Nouvelle catégorie"'>
+				<ul>
+					<li ng-class='{"active":currentSousCateg.ref==ce.ref && currentEditCateg.nom!="Nouvelle sous-catégorie"}' ng-click='selectSousCateg(ce)' ng-repeat='ce in currentCateg.scat'>{{ce.nom}}</li>	
+					
+				</ul><li ng-class='{"active":currentEditCateg.nom=="Nouvelle sous-catégorie"}' class='fi' ng-click='newSousCateg(currentCateg)' > <i class="fa fa-plus"></i> Nouvelle sous-catégorie</li>
+			</div>
+		</div>	
+	</div>	
+</div>
+<div class='row mt30'>
+	<div  class='col-10'>
+		<div class="input-group mb-3">
+			<div class="input-group-prepend">
+				<span class="input-group-text" id="basic-addon1"><i class="fa fa-pencil"></i></span>
+			</div>
+			<input ng-keyup="$event.keyCode == 13 && valider()&& getCateg()&& getSousCateg(currentEditCateg)" class='form-control' ng-model='currentEditCateg.nom' />
+
+			<!--
+			<input ng-if='currentSousCateg' class='form-control' ng-model='currentEditCateg.nom'/>
+			-->
+		</div>
+	</div>
+	<div class='col-1'>
+		<button ng-click='openSupCategModal();changeArticleFiltreCateg(currentEditCateg.ref);' ng-if='currentEditCateg.nom' class='btn btn-danger p100'><i class="fa fa-trash"></i></button>
+	</div>
+	<div class='col-1'>
+		<button class='btn btn-success db p100' ng-if='currentEditCateg.nom' ng-click='valider();getCateg();currentEditCategNull();getSousCateg(currentEditCateg)'><i class="fa fa-check"></i></button>
+	</div>
+
+</div>
+
+<!--pop up modal -->	
+<div class="modal scroll" ng-class='{"modal-open": supCategModalOpened}'>
+<!--
+	<div class="modal-dialog modal-lg">
+-->
+		<div class="modal-dialog modal-dialog-centered modal-dialog-lg" role="document">
+			<div class="modal-content ">
+	  
+				<!-- Modal pour la suppression de categ -->  
+				<div ng-if='supCategModalOpened'>
+					<div class="modal-header">
+						<h6 class="modal-title">Suppression de la catégorie&nbsp: {{currentEditCateg.nom}}</h6>
+						<button type="button" ng-click='closeSupCategModal()' class="close" data-dismiss="modal" aria-label="Close">
+						  <span aria-hidden="true">&times;</span>
+						</button>
+					  </div>
+					  <div ng-if='!article.length'>
+						  <div class="modal-body">
+							   <div class="form-group">
+								   <p>Êtes-vous certain de vouloir supprimer cette catégorie ? </p>
+							  </div>
+						  </div>
+						  <div class="modal-footer">
+							<button type="button" ng-click='delCateg(currentEditCateg);closeSupCategModal();getCateg();getSousCateg(currentEditCateg)' class="btn btn-danger">Oui</button>
+							<button type="button" ng-click='closeSupCategModal()' class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+						  </div>
+					  </div>
+					  <div ng-if='article.length'>
+						  <p class='ml15 mt15 text-danger'>Suppression impossible ! </p>
+						  <p class='ml15'>Veuillez tout d'abord supprimer les articles contenues à l'intérieur de cette catégorie : </p>
+						  <ul>
+							<li ng-repeat='a in article'>{{a.design}}</li>
+						  </ul>
+						  
+					  </div>
+				</div>
+			</div>
+		</div><div class='black-cover' ng-click='closeSupCategModal()'></div>
+</div>
+
+		
+
+
+

@@ -1,0 +1,157 @@
+<div ng-if='!emprunterConfirmation'><h3>Déplacer du matériel vers un chantier</h3></div>
+<div ng-init='openEmprunterIntro()'>
+<!--------------------------------------------------------------------------------------------------------Intro------------------------------------------------------------------------------------------------------------------>
+
+	<div ng-show='emprunterIntro'> <!-- fonction code ean n'aime pas ng-if-->
+
+		<div class='instruction'>
+			<p>Veuillez renseigner le Matériel</p>
+		</div>
+
+			<!--
+			<img ng-if='!scanedArticle'src='{{inputImg}}' />
+			-->
+		
+		<div ng-show='!scanLoading && boutonCodeOpened'>
+			<div class='scane mb20'>
+		<!--
+			<button type="button" class="">
+		-->
+				<label for="file" class="btn btn-success" >SCANNER</label>
+				<input id='file' class='input-file' type='file' accept='image/*' capture='camera' fileread='inputImg' />
+<!--
+				<img src='inputImg'> 
+				{{inputImg}}
+-->
+		<!--
+			</button>
+		--></div>
+		</div>
+<!--
+			<p ng-if='scanedArticle'>{{scanedArticle.ean}}</p>
+-->
+<!--
+			<p ng-if='scanedArticle.errno==1'>Le code n'a pas pu être reconnu</p>
+			<p ng-if='scanedArticle.errno==2'>L'image est vide</p>
+		<!--
+-->
+<!--
+			<p>Enregistrement de l'image : {{scanedArticle.t1}} ms</p>
+			<p>Reconnaissance de l'image : {{scanedArticle.t2}} ms</p>
+		-->
+
+			
+		<div ng-if='boutonCodeOpened'>
+			<button  type="button" class="btn btn-info p100 db mt30" ng-click='closeBoutonCode()'>TAPPER LE CODE</button>
+		</div>
+		
+		<div ng-if='!boutonCodeOpened'>
+			<input type="text" ng-model="articleEan" class="form-control"  placeholder="Taper le code ean">
+			<button  type="button" class="btn btn-success p100 db mt30" ng-click='articleTap(articleEan)'>VALIDER</button>
+		</div>
+		
+		
+
+		<div ng-if='scanLoading'class='tac'>
+			<p>Reconnaissance du code barre...</p>
+			<img  class='preloader' src='preloader_hammer_hd.gif'> 
+		</div>
+	</div>
+	
+	<!------------------------------------------------------------------------------------------------------Validation---------------------------------------------------------------------------------------------------------------->
+	<div ng-if='emprunterValid'>
+		
+		<div ng-if='article==null' ><p>Matériel non reconnu</p> </div>
+		<div ng-if='article!=null'>
+			
+			<p class='capital bold text-danger mt20' ng-if='article.dernierEmp.refEtat==6'>Matériel cassé !</p>
+			<div ng-if='article.dernierEmp.refEtat!=6 && article.dernierEmp.intituleEtat'>
+				<p class='capital bold text-info mt20' > en {{article.dernierEmp.intituleEtat}} etat</p>
+			</div>
+			
+			<p>Matériel :</p>
+				<p class='capital bold'>{{article.design}}</p>
+				<p class='bold'>{{article.ref}}</p>
+
+			<p>Emplacement :</p>
+				<p ng-if='article.dernierEmp.intituleEmp && !article.dernierEmp.intituleEmpParent' class='capital bold'>{{article.dernierEmp.intituleEmp}}</p>
+				<p ng-if='article.dernierEmp.intituleEmp && article.dernierEmp.intituleEmpParent' class='capital bold'>{{article.dernierEmp.intituleEmpParent}}  >  {{article.dernierEmp.intituleEmp}}</p>
+				<p ng-if='!article.dernierEmp.intituleEmp' class='capital bold'>{{article.baseIntitule}}</p>
+		
+		<button type="button" class="btn btn-success p100 db mt30" ng-click='closeEmprunterValid();openEmprunterChoix(article.ref)'>VALIDER</button>
+		</div>
+		
+		<button type="button" class="btn btn-secondary p100 db mt30" ng-click='closeEmprunterValid(); openEmprunterIntro();openBoutonCode()'>RECOMMENCER</button>
+<!--
+		<button type="button" class="btn btn-secondary freeMarge p100 db">
+			<label for="file" class="label-file" >RECOMMENCER</label>
+			<input id='file' class='input-file' type='file' accept='image/*' capture='camera' fileread='inputImg' />
+		</button>
+-->
+	</div>
+		
+<!------------------------------------------------------------------------------------------------------ChoixChantier---------------------------------------------------------------------------------------------------------------->
+	<div ng-if='emprunterChoix'>
+		
+<!--
+		<p>Matériel scanné :</p>
+		<p class='capital bold'>{{article.design}}</p>
+			<p class='bold'>{{article.ref}}</p>
+
+		<p>Emplacement actuel du matériel :</p>
+		<p class='capital bold'>{{article.dernierEmp.intituleEmp}}</p>
+-->
+		<p>Destination :</p>
+
+		<select class=form-control ng-model="newSuivi.refEmp" >
+			<option ng-selected='c.ref==newSuivi.refEmp' ng-repeat='c in entrepot' value='{{c.ref}}'>{{c.intitule}} </option>
+		</select>
+		<div ng-if='!article.dernierEmp.intituleEtat'>
+			<p>Le matériel n'a aucun état de renseigné, veuillez l'indiquer</p>
+			<select class='form-control' ng-model="newSuivi.refEtat" >
+				<option ng-selected='e.ref==newSuivi.refEtat' ng-repeat='e in etat' value='{{e.ref}}'>{{e.intitule}} </option>
+			</select>
+		</div>
+		<div ng-if='newSuivi.refEmp'>
+			<button ng-if='!article.dernierEmp.intituleEtat' type="button" class="btn btn-success p100 db mt30" ng-click='updateSuiviArticle(article.ref, newSuivi.refEmp, newSuivi.refEtat)' ng-model='currentZoomArticle.rep'>VALIDER</button>
+			<button ng-if='article.dernierEmp.intituleEtat' type="button" class="btn btn-success p100 db mt30" ng-click='updateSuiviArticle(article.ref, newSuivi.refEmp, article.dernierEmp.refEtat)' ng-model='currentZoomArticle.rep'>VALIDER</button>
+		</div>
+		<button type="button" class="btn btn-secondary p100 db mt30" ng-click='closeEmprunterChoix();openEmprunterIntro();' >ANNULER</button>
+<!--
+		<a ng-click='closeEmprunterChoixChantier();OpenEmprunterIntro();'  class="btn btn-secondary freeMarge p100 db" >
+			<span >ANNULER</span>
+		</a>
+-->
+<!--
+		<button type="button" class="btn btn-secondary freeMarge p100 db"  >ANNULER</button>
+-->
+	</div>
+
+<!------------------------------------------------------------------------------------------------------Confirmation---------------------------------------------------------------------------------------------------------------->
+	<div ng-if='emprunterConfirmation'>
+		
+		<button type="button" class="btn btn-success left"><i class="fa fa-home"></i><a href="/?route=home"> Retourner à l'accueil</a></button>
+
+		<br>
+		<br>
+		<h3 class='mt50'>Opération réussie <i class="fa fa-check green"></i></h3>
+		<p>Le matériel peut être transporté vers le chantier &nbsp;: </p>
+		<p class='capital bold'>{{article.dernierEmp.intituleEmp}}</p>
+<!--
+		<p class='bold mt10'>le {{article.dateDernierMouv}}</p>
+		
+		<p>Chantier choisi :</p>
+
+		<p>Matériel emprunté :</p>
+		<p class='capital bold'>{{article.design}}</p>
+			<p class='bold'>{{article.ref}}</p>
+			
+		<p>Etat du matériel :</p>
+		<p ng-if='article.dernierEmp.intituleEtat' class='capital bold'>{{article.dernierEmp.intituleEtat}}</p>
+		<div ng-if='!article.dernierEmp.intituleEtat' class='capital bold'>Aucun état n'a été renseigné pour ce matériel</div>
+-->
+	</div>
+	
+
+	
+</div>

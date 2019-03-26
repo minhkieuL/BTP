@@ -1,0 +1,92 @@
+<h1 >Dépôts</h1>
+
+<!-- LISTE DES DEPOTS -->
+<div  ng-init='getDepots()'>
+	<div class='row'>
+		<div class='col '>
+			<div class='categ-col'>
+			
+				<p class='categ-col-title'>Dépôts</p>
+				<ul> <!--pour modifier la taille du tableau ->  .categ-col ul -> max-height: -> taille d'une case : 45px-->
+					<li ng-if='ep.type==0' ng-class='{"active":currentEmp.ref==ep.ref && currentEditEmp.placeholder!="Nouveau dépôt"}' ng-repeat='ep in emplacementParent' ng-click='getSousEmp(ep); dateNon()'>{{ep.intitule}}</li>
+				</ul><li  ng-class='{"active":currentEditEmp.placeholder=="Nouveau dépôt"}' class='fi' ng-click='newDepot(); dateNon()'><i class="fa fa-plus"></i> Nouveau dépôt</li>
+			</div> 
+		</div>
+		<div class='col ' ng-show='currentEmp'>
+			<div class='categ-col' >
+					<p class='categ-col-title'>{{currentEmp.intitule}} &gt; Emplacements</p>
+				<div ng-if='!currentEmp || currentEditEmp.placeholder=="Nouveau dépôt" || currentEditEmp.placeholder=="Nouveau chantier" ' class='pa20 fs14'>Veuillez sélectionner un dépôt ou un chantier</div>
+				<div ng-if='currentEmp && currentEditEmp.placeholder!="Nouveau dépôt" && currentEditEmp.placeholder!="Nouveau chantier"'>
+					<ul>
+						<li ng-class='{"active":currentSousEmp.ref==s.ref && currentEditEmp.intitule!="Nouvelle section"}' ng-click='selectSousEmp(s)' ng-repeat='s in currentEmp.semp'>{{s.intitule}}</li>	
+						
+					</ul><li ng-class='{"active":currentEditEmp.placeholder=="Nouvelle section"}' class='fi' ng-click='newSousEmp(currentEmp)' > <i class="fa fa-plus"></i> Nouvel emplacement</li>
+				</div>
+			</div>	
+		</div>
+	</div>
+</div>
+
+
+
+<!-- INPUT DE MODIFICATION -->
+<div ng-class='{"bord":dateEmp==true}' ng-show='currentEditEmp.placeholder' >
+	<div class='row ' ng-class='{"mt30":dateEmp!=true}'>
+		<div class='row marg' ng-if='dateEmp'>
+			<p  >Début :
+				
+				<input ng-blur='saveEmp(currentEditEmp)' type='date' ng-model="currentEditEmp.dateDebutDate" class='pseudo-input' id="inputDernierEntretien" ng-show='currentEditEmp.dateDebut || !currentEditEmp.dateDebutShowButton'>
+				<button class='btn btn-white btn-sm' ng-show='!currentEditEmp.dateDebut && currentEditEmp.dateDebutShowButton' ng-click='currentEditEmp.dateDebutShowButton=!currentEditEmp.dateDebutShowButton'>Définir</button>
+			</p>	
+			<p  class='ml20'>    Fin :
+				
+				<input ng-blur='saveEmp(currentEditEmp)' type='date' ng-model="currentEditEmp.dateFinDate" class='pseudo-input' id="inputDerniereRep" ng-show='currentEditEmp.dateFin || !currentEditEmp.dateFinShowButton'>
+				<button class='btn btn-white btn-sm' ng-show='!currentEditEmp.dateFin && currentEditEmp.dateFinShowButton' ng-click='currentEditEmp.dateFinShowButton=!currentEditEmp.dateFinShowButton'>Définir</button>
+			</p>
+		</div>
+		<div  class='col-10'>
+			<div class="input-group mb-3">
+				<div class="input-group-prepend">
+					<span class="input-group-text" id="basic-addon1"><i class="fa fa-pencil"></i></span>
+				</div>
+				<input ng-keyup="$event.keyCode == 13 && addDepotValider() " class='form-control' ng-model='currentEditEmp.intitule'  placeholder="{{currentEditEmp.placeholder}}"/>
+			</div>
+		</div>
+		<div class='col-1' ng-show='currentEditEmp.ref'>
+			<button ng-click='openSupEmpModal()'  class='btn btn-danger p100'><i class="fa fa-trash"></i></button>
+		</div>
+		<div class='col-1'>
+			<button class='btn btn-success db p100' ng-if='currentEditEmp.intitule' ng-click='addDepotValider()'><i class="fa fa-check"></i></button>
+		</div>
+	</div>
+</div>
+
+
+<!-- MODAL POUR LA SUPPRESSION D'EMPLACEMENT -->  	
+<div class="modal scroll" ng-class='{"modal-open": supEmpModalOpened}'>
+		<div class="modal-dialog modal-dialog-centered modal-dialog-lg" role="document">
+			<div class="modal-content ">
+				
+				<div ng-if='supEmpModalOpened'>
+					<div class="modal-header">
+						<h6 class="modal-title">Suppression de l'emplacement&nbsp: {{currentEditEmp.intitule}}</h6>
+						<button type="button" ng-click='closeSupEmpModal()' class="close" data-dismiss="modal" aria-label="Close">
+						  <span aria-hidden="true">&times;</span>
+						</button>
+					  </div>
+					  <div class="modal-body">
+						   <div class="form-group">
+							   <p>Êtes-vous certain de vouloir continuer ? </p>
+						  </div>
+					  </div>
+					  <div class="modal-footer">
+						<button type="button" ng-click='delEmp(currentEditEmp);closeSupEmpModal();getDepots()' class="btn btn-danger">Oui</button>
+						<button type="button" ng-click='closeSupEmpModal()' class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+					  </div>
+				</div>
+			<div/>
+		</div>
+</div>
+<div class='black-cover' ng-click='closeSupEmpModal()'></div>
+
+
