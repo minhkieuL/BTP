@@ -761,6 +761,11 @@ app.controller("adminCtrl", function($scope,$http, $window) {
 			$http.post("http://localhost/btp/site_btp_admin/?type=json&route=action_emplacements",{action:"edit", emplacements: [e]},{})
 			.success(function (dataFromServer) {
 				console.log("modif ok", dataFromServer);
+				if(e.dateDebut){
+					$scope.getEmp(1);
+				}else{
+					$scope.getEmp(0);
+				}
 				
 				
 			});

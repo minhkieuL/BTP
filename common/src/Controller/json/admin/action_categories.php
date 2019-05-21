@@ -1,5 +1,5 @@
 <?php
-require($entity_path.'Categorie.php');
+// require('../../../Entity/Categorie.php');
 $refParent = intval(@$parameters["refParent"]);
 
 $action = @$parameters["action"];

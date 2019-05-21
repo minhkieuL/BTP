@@ -1,0 +1,7 @@
+http://172.20.0.243/SITEBTP/site_btp_admin
+login : Lau@gmail.fr
+mdp : Verseuilly.Laurent
+
+http://172.20.0.243/SITEBTP/site_btp
+login : Lau@gmail.fr
+mdp : Verseuilly.Laurent
